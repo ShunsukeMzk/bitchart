@@ -1,0 +1,16 @@
+numpy
+pandas
+bokeh
+Click
+Flask
+itsdangerous
+Jinja2
+MarkupSafe
+Werkzeug
+gunicorn
+pybitflyer
+schedule
+matplotlib
+mpl_finance
+requests
+beautifulsoup4
