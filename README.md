@@ -1,0 +1,2 @@
+# bitchart
+Analyze BitCoin-Chart
