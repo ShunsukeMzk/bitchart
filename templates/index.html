@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="d-none d-sm-block col-sm-2">
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="/">home</a>
+                {% for chart in chart_list %}
+                    <a class="nav-link" href="chart/{{ chart }}">{{ chart }}</a>
+                {% endfor %}
+            </nav>
+        </div>
+        <div class="col-10">
+            <div class="card-deck">
+                {% for chart, current_price in chart_list.items() %}
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3">
+                        <div class="card border-gray" style="max-width: 25rem;">
+                            <img src="/static/image/{{ chart }}.png" class="card-img-top" alt="moomintroll">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ chart }}<br><small class="text-muted">from bitflyer</small></h6>
+                                <p class="card-text text-primary">{{ current_price }}</p>
+                            </div>
+                            <div class="card-footer text-right">
+                                <a href="chart/{{ chart }}" class="card-link btn btn-primary">open chart</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
