@@ -37,7 +37,7 @@ def watch_price(product_code):
         price = api.ticker(product_code=product_code)['ltp']
         latency = datetime.datetime.now().timestamp() - timestamp
         logger.debug(f"product_code: {product_code}, price: {price}, latency: {latency}")
-    except requests.RequestException as e:
+    except Exception as e:
         logger.warning(f"Unable to get price: {e}")
         price = ''
         latency = -1
