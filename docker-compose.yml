@@ -4,12 +4,13 @@ services:
 
     https-portal:
         image: steveltn/https-portal:1
+        container_name: https-portal
         ports:
-            - '80:80'
-            - '443:443'
+            - 80:80
+            - 443:443
         environment:
-            DOMAINS: 'bitchart.mmw.works -> http://nginx:8000'
-#            STAGE: 'production'
+            DOMAINS: "${DOMAIN} -> http://nginx:8080"
+            STAGE: ${STAGE}
         volumes:
             - ./ssl_certs:/var/lib/https-portal
         restart: always
@@ -18,36 +19,55 @@ services:
         image: nginx
         container_name: nginx
         ports:
-            - "8000:8000"
+            - 8080:8080
         volumes:
-            - "./nginx/bitchart.conf:/etc/nginx/conf.d/default.conf"
-            - "./run:/run/bitchart"
+            - ./nginx/mysite.template:/etc/nginx/conf.d/mysite.template
+            - run:/run/${APP_NAME}
+        environment:
+            NGINX_HOST: ${DOMAIN}
+            NGINX_PORT: 8080
+        command: >
+            /bin/bash -c "envsubst '
+            $$NGINX_HOST
+            $$NGINX_PORT
+            ' < /etc/nginx/conf.d/mysite.template
+            > /etc/nginx/conf.d/default.conf
+            && exec nginx -g 'daemon off;'"
         restart: always
 
     presenter:
-        build: .
+        build:
+            context: .
+            args:
+                app_name: ${APP_NAME}
         container_name: presenter
-        command: gunicorn --bind unix:/run/bitchart/gunicorn.sock app:app
+        command: gunicorn --bind unix:/run/${APP_NAME}/gunicorn.sock app:app
         volumes:
-            - "./run:/run/bitchart"  # for gunicorn.sock
-            - "./var:/var/log/bitchart"
-            - ".:/opt/bitchart"
+            - ./:/opt/${APP_NAME}
+            - run:/run/${APP_NAME}
         restart: always
 
     analyzer:
-        build: .
+        build:
+            context: .
+            args:
+                app_name: ${APP_NAME}
         container_name: analyzer
         command: python analyze.py
         volumes:
-            - "./var:/var/log/bitchart"
-            - ".:/opt/bitchart"
+            - ./:/opt/${APP_NAME}
         restart: always
 
     watcher:
-        build: .
+        build:
+            context: .
+            args:
+                app_name: ${APP_NAME}
         container_name: watcher
         command: python watch.py
         volumes:
-            - "./var:/var/log/bitchart"
-            - ".:/opt/bitchart"
+            - ./:/opt/${APP_NAME}
         restart: always
+
+volumes:
+    run:

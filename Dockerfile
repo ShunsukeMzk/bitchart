@@ -1,14 +1,10 @@
 FROM python:3.7
 
-ARG project_name=bitchart
+ARG app_name
 
-VOLUME /opt/$project_name
-VOLUME /var/log/$project_name
-VOLUME /run/$project_name
+COPY requirements.txt /tmp/
+RUN pip install -r /tmp/requirements.txt
 
-ADD requirements.txt /
-RUN pip install -r requirements.txt
+WORKDIR /opt/$app_name
 
-WORKDIR /opt/$project_name
-
-CMD ["gunicorn", "--bind", "unix:/run/bitchart/gunicorn.sock", "app:app"]
+CMD /bin/bash
