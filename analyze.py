@@ -16,6 +16,9 @@ import conf
 logger = getLogger(Path(__file__).name)
 logger.setLevel(logging.DEBUG)
 
+if not Path('log').exists():
+    Path('log').mkdir()
+
 stream_handler = StreamHandler()
 stream_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
@@ -24,9 +27,6 @@ file_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(
 
 logger.addHandler(stream_handler)
 logger.addHandler(file_handler)
-
-if not Path('log').exists():
-    Path('log').mkdir()
 
 
 def exec_per_minute(job, *args, **kwargs):
