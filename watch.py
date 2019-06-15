@@ -17,11 +17,14 @@ logger.setLevel(logging.DEBUG)
 stream_handler = StreamHandler()
 stream_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
-file_handler = FileHandler('/var/log/bitchart/watch.log')
+file_handler = FileHandler('log/watch.log')
 file_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
 logger.addHandler(stream_handler)
 logger.addHandler(file_handler)
+
+if not Path('log').exists():
+    Path('log').mkdir()
 
 api = pybitflyer.pybitflyer.API()
 
@@ -41,7 +44,7 @@ def watch_price(product_code):
         logger.warning(f"Unable to get price: {e}")
         price = ''
         latency = -1
-    with open(f'/opt/bitchart/data/{product_code}.tsv', 'a') as f:
+    with open(f'data/{product_code}.tsv', 'a') as f:
         f.write(f'{int(timestamp)}\t{price}\t{latency}\n')
 
 

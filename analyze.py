@@ -19,11 +19,14 @@ logger.setLevel(logging.DEBUG)
 stream_handler = StreamHandler()
 stream_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
-file_handler = FileHandler('/var/log/bitchart/analyze.log')
+file_handler = FileHandler('log/analyze.log')
 file_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
 logger.addHandler(stream_handler)
 logger.addHandler(file_handler)
+
+if not Path('log').exists():
+    Path('log').mkdir()
 
 
 def exec_per_minute(job, *args, **kwargs):
@@ -34,7 +37,7 @@ def draw_graph(product_code):
     logger.debug(f"start draw chart: {product_code}")
     figure_width = 1200
 
-    df = pd.read_csv(f'/opt/bitchart/data/{product_code}.tsv', names=('timestamp', 'price', 'latency'), sep='\t')
+    df = pd.read_csv(f'data/{product_code}.tsv', names=('timestamp', 'price', 'latency'), sep='\t')
     df['timestamp'] = pd.to_datetime(df.timestamp, unit='s')
     df['timestamp'] = df['timestamp'] + offsets.timedelta(hours=9)  # offset "+09:00"
     df = df.set_index('timestamp')
